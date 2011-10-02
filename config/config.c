@@ -107,7 +107,9 @@ BOOL CALLBACK PropSheetProc(HWND hwnd, UINT msg, LPARAM lParam) {
 INT_PTR CALLBACK GeneralPageDialogProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	int updatel10n = 0;
 	if (msg == WM_INITDIALOG) {
-		wchar_t txt[1000];
+		wchar_t txt[30];
+		GetPrivateProfileString(APP_NAME, L"PlaySound", L"", txt, sizeof(txt)/sizeof(wchar_t), inipath);
+		Button_SetCheck(GetDlgItem(hwnd,IDC_PLAYSOUND), wcslen(txt)>0?BST_CHECKED:BST_UNCHECKED);
 		GetPrivateProfileString(APP_NAME, L"IgnoreDriveLetters", L"", txt, sizeof(txt)/sizeof(wchar_t), inipath);
 		SetDlgItemText(hwnd, IDC_IGNORE, txt);
 		
@@ -125,8 +127,11 @@ INT_PTR CALLBACK GeneralPageDialogProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
 		HWND control = GetDlgItem(hwnd, id);
 		int val = Button_GetCheck(control);
 		
-		if (id == IDC_IGNORE && event == EN_KILLFOCUS) {
-			wchar_t txt[1000];
+		if (id == IDC_PLAYSOUND) {
+			WritePrivateProfileString(APP_NAME, L"PlaySound", val?L"beep.wav":L"", inipath);
+		}
+		else if (id == IDC_IGNORE && event == EN_KILLFOCUS) {
+			wchar_t txt[30];
 			Edit_GetText(control, txt, sizeof(txt)/sizeof(wchar_t));
 			WritePrivateProfileString(APP_NAME, L"IgnoreDriveLetters", txt, inipath);
 		}
@@ -172,6 +177,7 @@ INT_PTR CALLBACK GeneralPageDialogProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
 	if (updatel10n) {
 		//Update text
 		SetDlgItemText(hwnd, IDC_GENERAL_BOX,         l10n->general_box);
+		SetDlgItemText(hwnd, IDC_PLAYSOUND,           l10n->general_playsound);
 		SetDlgItemText(hwnd, IDC_IGNORE_HEADER,       l10n->general_ignore);
 		SetDlgItemText(hwnd, IDC_LANGUAGE_HEADER,     l10n->general_language);
 		SetDlgItemText(hwnd, IDC_AUTOSTART_BOX,       l10n->general_autostart_box);

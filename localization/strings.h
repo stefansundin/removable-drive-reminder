@@ -25,6 +25,7 @@ struct strings {
 	wchar_t *tab_advanced;
 	wchar_t *tab_about;
 	wchar_t *general_box;
+	wchar_t *general_playsound;
 	wchar_t *general_ignore;
 	wchar_t *general_language;
 	wchar_t *general_helptranslate;

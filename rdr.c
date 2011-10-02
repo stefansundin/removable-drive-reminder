@@ -68,8 +68,8 @@ int countdown = 0;
 
 //Timers
 #define COUNTDOWN_TIMER WM_APP+1
-#define RESET_TIMER     WM_APP+2
-#define DESTROY_TIMER   WM_APP+3
+#define DESTROY_TIMER   WM_APP+2
+#define BEEP_TIMER      WM_APP+3
 
 //Include stuff
 #include "localization/strings.h"
@@ -296,7 +296,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				countdown = 31;
 				SendMessage(hwnd, WM_TIMER, COUNTDOWN_TIMER, 0);
 				SetTimer(g_hwnd, COUNTDOWN_TIMER, 1000, NULL);
-				SetTimer(g_hwnd, RESET_TIMER, 40000, NULL);
 			}
 			else {
 				//WinXP
@@ -312,12 +311,17 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			return TRUE;
 		}
 	}
+	else if (msg == WM_ENDSESSION && wParam == FALSE) {
+		//The log off was aborted
+		KillTimer(g_hwnd, COUNTDOWN_TIMER);
+		ShutdownBlockReasonDestroy(g_hwnd);
+		blocking = 0;
+	}
 	else if (msg == WM_TIMER) {
 		if (wParam == COUNTDOWN_TIMER) {
 			countdown--;
 			if (countdown == 0) {
 				KillTimer(g_hwnd, COUNTDOWN_TIMER);
-				KillTimer(g_hwnd, RESET_TIMER);
 				ShutdownBlockReasonCreate(g_hwnd, l10n->oops);
 				SetTimer(g_hwnd, DESTROY_TIMER, 5000, NULL);
 			}
@@ -328,20 +332,21 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				CheckDrives();
 			}
 		}
-		else if (wParam == RESET_TIMER) {
-			//No way this can happen if the countdown timer runs out and the user was logged out
-			//Therefore, the log off was aborted. Reset state.
-			blocking = 0;
-			ShutdownBlockReasonDestroy(g_hwnd);
-		}
 		else if (wParam == DESTROY_TIMER) {
 			//We use a timer for this so the goodbye message can be seen.
 			DestroyWindow(g_hwnd);
 		}
+		else if (wParam == BEEP_TIMER) {
+			KillTimer(g_hwnd, BEEP_TIMER);
+			wchar_t txt[MAX_PATH];
+			GetPrivateProfileString(APP_NAME, L"PlaySound", L"", txt, sizeof(txt)/sizeof(wchar_t), inipath);
+			if (wcslen(txt) > 0) {
+				PlaySound(txt, NULL, SND_FILENAME);
+			}
+		}
 	}
 	else if (msg == WM_DEVICECHANGE && wParam == DBT_DEVICEREMOVECOMPLETE && ENABLED() && blocking) {
 		KillTimer(g_hwnd, COUNTDOWN_TIMER);
-		KillTimer(g_hwnd, RESET_TIMER);
 		ShutdownBlockReasonCreate(g_hwnd, l10n->gotit);
 		SetTimer(g_hwnd, DESTROY_TIMER, 5000, NULL);
 	}

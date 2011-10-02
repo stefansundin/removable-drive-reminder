@@ -35,6 +35,7 @@ struct strings en_US = {
  /* _about            */ L"About",
  /* general tab */
  /* _box              */ L"General settings",
+ /* _playsound        */ L"Play beep.wav as an extra measure",
  /* _ignore           */ L"Ignore these drive letters:",
  /* _language         */ L"Language:",
  /* _helptranslate    */ L"How can I help translate?",

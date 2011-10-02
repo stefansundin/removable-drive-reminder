@@ -18,13 +18,13 @@ if "%1" == "all" (
 	
 	@echo.
 	echo Building release build
-	%prefix32%gcc -o "build\Removable Drive Reminder.exe" rdr.c build\rdr.o -mwindows -lshlwapi -lwininet -lcomctl32 -O2 -s
+	%prefix32%gcc -o "build\Removable Drive Reminder.exe" rdr.c build\rdr.o -mwindows -lshlwapi -lwininet -lcomctl32 -lwinmm -O2 -s
 	if not exist "build\Removable Drive Reminder.exe". exit /b
 	
 	if "%2" == "x64" (
 		if not exist "build\x64". mkdir "build\x64"
 		%prefix64%windres -o build\x64\rdr.o include\rdr.rc
-		%prefix64%gcc -o "build\x64\Removable Drive Reminder.exe" rdr.c build\x64\rdr.o -mwindows -lshlwapi -lwininet -lcomctl32 -O2 -s
+		%prefix64%gcc -o "build\x64\Removable Drive Reminder.exe" rdr.c build\x64\rdr.o -mwindows -lshlwapi -lwininet -lcomctl32 -lwinmm -O2 -s
 		if not exist "build\x64\Removable Drive Reminder.exe". exit /b
 	)
 	
@@ -52,10 +52,10 @@ if "%1" == "all" (
 ) else if "%1" == "x64" (
 	if not exist "build\x64". mkdir "build\x64"
 	%prefix64%windres -o build\x64\rdr.o include\rdr.rc
-	%prefix64%gcc -o "Removable Drive Reminder.exe" rdr.c build\x64\rdr.o -mwindows -lshlwapi -lwininet -lcomctl32 -g -DDEBUG
+	%prefix64%gcc -o "Removable Drive Reminder.exe" rdr.c build\x64\rdr.o -mwindows -lshlwapi -lwininet -lcomctl32 -lwinmm -g -DDEBUG
 ) else (
 	%prefix32%windres include\rdr.rc build\rdr.o
-	%prefix32%gcc -o "Removable Drive Reminder.exe" rdr.c build\rdr.o -mwindows -lshlwapi -lwininet -lcomctl32 -g -DDEBUG
+	%prefix32%gcc -o "Removable Drive Reminder.exe" rdr.c build\rdr.o -mwindows -lshlwapi -lwininet -lcomctl32 -lwinmm -g -DDEBUG
 	
 	if "%1" == "run" (
 		start "" "Removable Drive Reminder.exe"

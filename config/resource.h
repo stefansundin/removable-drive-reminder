@@ -6,6 +6,7 @@
 #define IDD_ADVANCEDPAGE                        202
 #define IDD_ABOUTPAGE                           203
 #define IDI_ICONBIG                             300
+#define IDC_PLAYSOUND                           1001
 #define IDC_GENERAL_BOX                         1101
 #define IDC_IGNORE_HEADER                       1102
 #define IDC_IGNORE                              1103
