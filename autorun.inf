@@ -1,0 +1,5 @@
+[autorun]
+action=Remind me to remove flash drive
+open=Removable Drive Reminder.exe
+icon=Removable Drive Reminder.exe
+;label=

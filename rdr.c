@@ -295,49 +295,50 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			if (vista) {
 				countdown = 31;
 				SendMessage(hwnd, WM_TIMER, COUNTDOWN_TIMER, 0);
-				SetTimer(g_hwnd, COUNTDOWN_TIMER, 1000, NULL);
+				SetTimer(hwnd, COUNTDOWN_TIMER, 1000, NULL);
 			}
 			else {
 				//WinXP
 				MessageBox(NULL, l10n->reminder, APP_NAME, MB_ICONWARNING|MB_OK);
 			}
 			blocking = 1;
+			SetTimer(hwnd, BEEP_TIMER, 10, NULL);
 			return FALSE;
 		}
 		else {
 			if (vista) {
-				ShutdownBlockReasonDestroy(g_hwnd);
+				ShutdownBlockReasonDestroy(hwnd);
 			}
 			return TRUE;
 		}
 	}
 	else if (msg == WM_ENDSESSION && wParam == FALSE) {
 		//The log off was aborted
-		KillTimer(g_hwnd, COUNTDOWN_TIMER);
-		ShutdownBlockReasonDestroy(g_hwnd);
+		KillTimer(hwnd, COUNTDOWN_TIMER);
+		ShutdownBlockReasonDestroy(hwnd);
 		blocking = 0;
 	}
 	else if (msg == WM_TIMER) {
 		if (wParam == COUNTDOWN_TIMER) {
 			countdown--;
 			if (countdown == 0) {
-				KillTimer(g_hwnd, COUNTDOWN_TIMER);
-				ShutdownBlockReasonCreate(g_hwnd, l10n->oops);
-				SetTimer(g_hwnd, DESTROY_TIMER, 5000, NULL);
+				KillTimer(hwnd, COUNTDOWN_TIMER);
+				ShutdownBlockReasonCreate(hwnd, l10n->oops);
+				SetTimer(hwnd, DESTROY_TIMER, 5000, NULL);
 			}
 			else {
 				wchar_t txt[100];
 				wsprintf(txt, L"(%d) %s", countdown, l10n->reminder);
-				ShutdownBlockReasonCreate(g_hwnd, txt);
+				ShutdownBlockReasonCreate(hwnd, txt);
 				CheckDrives();
 			}
 		}
 		else if (wParam == DESTROY_TIMER) {
 			//We use a timer for this so the goodbye message can be seen.
-			DestroyWindow(g_hwnd);
+			DestroyWindow(hwnd);
 		}
 		else if (wParam == BEEP_TIMER) {
-			KillTimer(g_hwnd, BEEP_TIMER);
+			KillTimer(hwnd, BEEP_TIMER);
 			wchar_t txt[MAX_PATH];
 			GetPrivateProfileString(APP_NAME, L"PlaySound", L"", txt, sizeof(txt)/sizeof(wchar_t), inipath);
 			if (wcslen(txt) > 0) {
@@ -346,9 +347,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		}
 	}
 	else if (msg == WM_DEVICECHANGE && wParam == DBT_DEVICEREMOVECOMPLETE && ENABLED() && blocking) {
-		KillTimer(g_hwnd, COUNTDOWN_TIMER);
-		ShutdownBlockReasonCreate(g_hwnd, l10n->gotit);
-		SetTimer(g_hwnd, DESTROY_TIMER, 5000, NULL);
+		KillTimer(hwnd, COUNTDOWN_TIMER);
+		ShutdownBlockReasonCreate(hwnd, l10n->gotit);
+		SetTimer(hwnd, DESTROY_TIMER, 5000, NULL);
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }

@@ -34,11 +34,15 @@ if "%1" == "all" (
 		if not exist "build\%%f\Removable Drive Reminder". mkdir "build\%%f\Removable Drive Reminder"
 		copy "build\Removable Drive Reminder.exe" "build\%%f\Removable Drive Reminder"
 		copy "Removable Drive Reminder.ini" "build\%%f\Removable Drive Reminder"
+		copy "beep.wav" "build\%%f\Removable Drive Reminder"
+		copy "autorun.inf" "build\%%f\Removable Drive Reminder"
 		build\ini "build\%%f\Removable Drive Reminder\Removable Drive Reminder.ini" "Removable Drive Reminder" Language %%f
 		if "%2" == "x64" (
 			if not exist "build\x64\%%f\Removable Drive Reminder". mkdir "build\x64\%%f\Removable Drive Reminder"
 			copy "build\x64\Removable Drive Reminder.exe" "build\x64\%%f\Removable Drive Reminder"
 			copy "build\%%f\Removable Drive Reminder\Removable Drive Reminder.ini" "build\x64\%%f\Removable Drive Reminder"
+			copy "build\%%f\Removable Drive Reminder\beep.wav" "build\x64\%%f\Removable Drive Reminder"
+			copy "build\%%f\Removable Drive Reminder\autorun.inf" "build\x64\%%f\Removable Drive Reminder"
 		)
 	)
 	
