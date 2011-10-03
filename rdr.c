@@ -229,7 +229,9 @@ void ToggleState() {
 		SendMessage(g_hwnd, WM_UPDATESETTINGS, 0, 0);
 	}
 	else {
-		ShutdownBlockReasonDestroy(g_hwnd);
+		if (vista) {
+			ShutdownBlockReasonDestroy(g_hwnd);
+		}
 	}
 	UpdateTray();
 }
@@ -316,20 +318,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	}
 	else if (msg == WM_QUERYENDSESSION && !(GetAsyncKeyState(VK_SHIFT)&0x8000)) {
 		if (ENABLED() && CheckDrives()) {
+			blocking = 1;
 			hide = 0;
 			UpdateTray();
+			SetTimer(hwnd, BEEP_TIMER, 10, NULL);
+			
 			if (vista) {
 				countdown = 31;
 				SendMessage(hwnd, WM_TIMER, COUNTDOWN_TIMER, 0);
 				SetTimer(hwnd, COUNTDOWN_TIMER, 1000, NULL);
+				return FALSE;
 			}
-			else {
-				//WinXP
-				MessageBox(NULL, l10n->reminder, APP_NAME, MB_ICONWARNING|MB_OK);
-			}
-			blocking = 1;
-			SetTimer(hwnd, BEEP_TIMER, 10, NULL);
-			return FALSE;
+			
+			//WinXP
+			SetTimer(hwnd, DESTROY_TIMER, 4000, NULL);
+			MessageBox(NULL, l10n->reminder, APP_NAME, MB_ICONWARNING|MB_OK);
+			return TRUE;
 		}
 		else {
 			if (vista) {
@@ -341,8 +345,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	else if (msg == WM_ENDSESSION && wParam == FALSE) {
 		//The log off was aborted
 		KillTimer(hwnd, COUNTDOWN_TIMER);
-		ShutdownBlockReasonDestroy(hwnd);
 		blocking = 0;
+		if (vista) {
+			ShutdownBlockReasonDestroy(hwnd);
+		}
 	}
 	else if (msg == WM_TIMER) {
 		if (wParam == COUNTDOWN_TIMER) {
@@ -350,7 +356,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			if (countdown == 0) {
 				KillTimer(hwnd, COUNTDOWN_TIMER);
 				ShutdownBlockReasonCreate(hwnd, l10n->oops);
-				SetTimer(hwnd, DESTROY_TIMER, 5000, NULL);
+				SetTimer(hwnd, DESTROY_TIMER, 3000, NULL);
 			}
 			else {
 				wchar_t txt[100];
@@ -375,7 +381,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	else if (msg == WM_DEVICECHANGE && wParam == DBT_DEVICEREMOVECOMPLETE && ENABLED() && blocking) {
 		KillTimer(hwnd, COUNTDOWN_TIMER);
 		ShutdownBlockReasonCreate(hwnd, l10n->gotit);
-		SetTimer(hwnd, DESTROY_TIMER, 5000, NULL);
+		SetTimer(hwnd, DESTROY_TIMER, 3000, NULL);
 	}
 	else if (msg == WM_DEVICECHANGE && wParam == DBT_DEVICEQUERYREMOVE) {
 		//Quickly exit if the user uses the safely remove hardware tray icon
