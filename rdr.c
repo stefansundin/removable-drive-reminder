@@ -385,7 +385,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	}
 	else if (msg == WM_DEVICECHANGE && wParam == DBT_DEVICEQUERYREMOVE) {
 		//Quickly exit if the user uses the safely remove hardware tray icon
-		DestroyWindow(hwnd);
+		showerror = 0;
+		RemoveTray();
+		TerminateProcess(GetCurrentProcess(), 0);
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
