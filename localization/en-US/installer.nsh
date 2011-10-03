@@ -22,6 +22,7 @@ LangString L10N_LOCATION_HEADER   ${LANG} "${APP_NAME} can be installed either o
 LangString L10N_LOCATION_FLASH    ${LANG} "Install to a &flash drive."
 LangString L10N_LOCATION_FLASH2   ${LANG} "This will help you remember your flash drive wherever you go."
 LangString L10N_LOCATION_FLASH3   ${LANG} "Drive:"
+LangString L10N_LOCATION_REFRESH  ${LANG} "Refresh list"
 LangString L10N_LOCATION_SYSTEM   ${LANG} "Install to the &system."
 LangString L10N_LOCATION_SYSTEM2  ${LANG} "This is usable for system administrators. Be sure to read the wiki to learn how to do easy deployment."
 

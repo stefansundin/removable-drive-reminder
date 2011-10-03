@@ -171,17 +171,39 @@ Function PageLocation
 	${NSD_CreateRadioButton} 0 45 100% 10u "$(L10N_LOCATION_FLASH)"
 	Pop $Flashbox
 	${NSD_Check} $Flashbox
+	${NSD_OnClick} $Flashbox "UpdateNextButton"
+	
 	${NSD_CreateLabel} 16 62 100% 10u "$(L10N_LOCATION_FLASH2)"
 	${NSD_CreateLabel} 16 83 35 10u "$(L10N_LOCATION_FLASH3)"
 	
 	${NSD_CreateDropList} 55 80 45 30
 	Pop $Combobox
-	${GetDrives} "FDD" "ListDrives"
+	Call RefreshDrives
+	
+	${NSD_CreateButton} 115 79 80 23 "$(L10N_LOCATION_REFRESH)"
+	Pop $0
+	${NSD_OnClick} $0 "RefreshDrives"
 	
 	${NSD_CreateRadioButton} 0 135 100% 10u "$(L10N_LOCATION_SYSTEM)"
+	Pop $0
+	${NSD_OnClick} $0 "UpdateNextButton"
 	${NSD_CreateLabel} 16 152 100% 20u "$(L10N_LOCATION_SYSTEM2)"
 	
 	nsDialogs::Show
+FunctionEnd
+
+Function PageLocationLeave
+	${NSD_GetState} $Flashbox $LocationState
+	${NSD_GetText} $Combobox $0
+	${If} $LocationState == ${BST_CHECKED}
+		StrCpy $INSTDIR "$0"
+	${EndIf}
+FunctionEnd
+
+Function RefreshDrives
+	SendMessage $Combobox ${CB_RESETCONTENT} 0 0
+	${GetDrives} "FDD" "ListDrives"
+	Call UpdateNextButton
 FunctionEnd
 
 Function ListDrives
@@ -190,11 +212,16 @@ Function ListDrives
 	Push $0
 FunctionEnd
 
-Function PageLocationLeave
-	${NSD_GetState} $Flashbox $LocationState
-	${NSD_GetText} $Combobox $0
-	${If} $LocationState == ${BST_CHECKED}
-		StrCpy $INSTDIR "$0"
+Function UpdateNextButton
+	${NSD_GetState} $Flashbox $0
+	${NSD_GetText} $Combobox $1
+	
+	GetDlgItem $3 $HWNDPARENT 1
+	${If} $0 == ${BST_CHECKED}
+	${AndIf} $1 == ""
+		EnableWindow $3 0
+	${Else}
+		EnableWindow $3 1
 	${EndIf}
 FunctionEnd
 
@@ -302,8 +329,8 @@ Function SkipPage
 FunctionEnd
 
 Function HideBackButton
-	GetDlgItem $3 $HWNDPARENT 3
-	ShowWindow $3 ${SW_HIDE}
+	GetDlgItem $0 $HWNDPARENT 3
+	ShowWindow $0 ${SW_HIDE}
 FunctionEnd
 
 Function .onInit
