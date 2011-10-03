@@ -28,7 +28,7 @@ ${StrLoc}
 Name "${APP_NAME} ${APP_VERSION}"
 OutFile "build/${APP_NAME}-${APP_VERSION}.exe"
 InstallDir "$PROGRAMFILES\${APP_NAME}"
-InstallDirRegKey HKCU "Software\${APP_NAME}" "Install_Dir"
+InstallDirRegKey HKLM "Software\${APP_NAME}" "Install_Dir"
 RequestExecutionLevel admin
 ShowInstDetails hide
 ShowUninstDetails show
@@ -36,7 +36,7 @@ SetCompressor /SOLID lzma
 
 ; Interface
 
-!define MUI_LANGDLL_REGISTRY_ROOT "HKCU" 
+!define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
 !define MUI_LANGDLL_REGISTRY_KEY "Software\${APP_NAME}" 
 !define MUI_LANGDLL_REGISTRY_VALUENAME "Language"
 
@@ -118,11 +118,11 @@ Var Upgradebox
 Var Uninstallbox
 
 Function PageUpgrade
-	ReadRegStr $0 HKCU "Software\${APP_NAME}" "Install_Dir"
+	ReadRegStr $0 HKLM "Software\${APP_NAME}" "Install_Dir"
 	IfFileExists $0 +2
 		Abort
 	
-	ReadRegStr $1 HKCU "Software\${APP_NAME}" "Version"
+	ReadRegStr $1 HKLM "Software\${APP_NAME}" "Version"
 	StrCmp $1 ${APP_VERSION} 0 +2
 		Abort
 	
@@ -262,8 +262,8 @@ Section "${APP_NAME}" sec_app
 	
 	${IfNot} $LocationState == ${BST_CHECKED}
 		;Update registry
-		WriteRegStr HKCU "Software\${APP_NAME}" "Install_Dir" "$INSTDIR"
-		WriteRegStr HKCU "Software\${APP_NAME}" "Version" "${APP_VERSION}"
+		WriteRegStr HKLM "Software\${APP_NAME}" "Install_Dir" "$INSTDIR"
+		WriteRegStr HKLM "Software\${APP_NAME}" "Version" "${APP_VERSION}"
 		
 		;Create uninstaller
 		WriteUninstaller "Uninstall.exe"
@@ -312,7 +312,7 @@ Function .onInit
 	${If} ${RunningX64}
 		SectionSetText ${sec_app} "${APP_NAME} (x64)"
 		;Only set x64 installation dir if not already installed
-		ReadRegStr $0 HKCU "Software\${APP_NAME}" "Install_Dir"
+		ReadRegStr $0 HKLM "Software\${APP_NAME}" "Install_Dir"
 		IfFileExists $0 +2
 			StrCpy $INSTDIR "$PROGRAMFILES64\${APP_NAME}"
 	${EndIf}
@@ -326,7 +326,7 @@ Function .onInit
 	autostart_check:
 	;Determine current autostart setting
 	StrCpy $AutostartSectionState 0
-	ReadRegStr $0 HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "${APP_NAME}"
+	ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "${APP_NAME}"
 	IfErrors done
 		!insertmacro SelectSection ${sec_autostart}
 		${StrLoc} $0 $0 "-hide" "<"
@@ -355,11 +355,11 @@ FunctionEnd
 Function .onInstSuccess
 	;Set or remove autostart
 	${If} ${SectionIsSelected} ${sec_hide}
-		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "${APP_NAME}" '"$INSTDIR\${APP_NAME}.exe" -hide'
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "${APP_NAME}" '"$INSTDIR\${APP_NAME}.exe" -hide'
 	${ElseIf} ${SectionIsSelected} ${sec_autostart}
-		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "${APP_NAME}" '"$INSTDIR\${APP_NAME}.exe"'
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "${APP_NAME}" '"$INSTDIR\${APP_NAME}.exe"'
 	${Else}
-		DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "${APP_NAME}"
+		DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "${APP_NAME}"
 	${EndIf}
 	;Run program if silent
 	IfSilent 0 +2
@@ -385,7 +385,7 @@ Section "Uninstall"
 
 	Delete /REBOOTOK "$SMPROGRAMS\${APP_NAME}.lnk"
 
-	DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "${APP_NAME}"
-	DeleteRegKey /ifempty HKCU "Software\${APP_NAME}"
+	DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "${APP_NAME}"
+	DeleteRegKey /ifempty HKLM "Software\${APP_NAME}"
 	DeleteRegKey /ifempty HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
 SectionEnd

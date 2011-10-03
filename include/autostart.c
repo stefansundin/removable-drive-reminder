@@ -15,7 +15,7 @@ void CheckAutostart(int *on, int *hidden) {
 	HKEY key;
 	wchar_t value[MAX_PATH+10] = L"";
 	DWORD len = sizeof(value);
-	RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_QUERY_VALUE, &key);
+	RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_QUERY_VALUE, &key);
 	RegQueryValueEx(key, APP_NAME, NULL, NULL, (LPBYTE)value, &len);
 	RegCloseKey(key);
 	//Compare
@@ -38,9 +38,9 @@ void CheckAutostart(int *on, int *hidden) {
 void SetAutostart(int on, int hide) {
 	//Open key
 	HKEY key;
-	int error = RegCreateKeyEx(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, NULL, 0, KEY_SET_VALUE, NULL, &key, NULL);
+	int error = RegCreateKeyEx(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, NULL, 0, KEY_SET_VALUE, NULL, &key, NULL);
 	if (error != ERROR_SUCCESS) {
-		Error(L"RegCreateKeyEx(HKEY_CURRENT_USER,'Software\\Microsoft\\Windows\\CurrentVersion\\Run')", L"Error opening the registry.", error, TEXT(__FILE__), __LINE__);
+		Error(L"RegCreateKeyEx(HKEY_LOCAL_MACHINE,'Software\\Microsoft\\Windows\\CurrentVersion\\Run')", L"Error opening the registry.", error, TEXT(__FILE__), __LINE__);
 		return;
 	}
 	if (on) {

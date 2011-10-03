@@ -13,7 +13,7 @@ struct strings en_US = {
  /* gotit          */ L"You're welcome! :)",
  
  /* === tray === */
- /* tray_enabled   */ APP_NAME " (enabled)",
+ /* tray_enabled   */ APP_NAME,
  /* tray_disabled  */ APP_NAME " (disabled)",
  /* menu_enable    */ L"Enable",
  /* menu_disable   */ L"Disable",

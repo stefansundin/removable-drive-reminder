@@ -23,6 +23,8 @@ HWND g_cfgwnd = NULL;
 #include "resource.h"
 #include "../include/autostart.c"
 
+extern int on_removable;
+
 //Entry point
 void OpenConfig(int startpage) {
 	if (IsWindow(g_cfgwnd)) {
@@ -172,6 +174,10 @@ INT_PTR CALLBACK GeneralPageDialogProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
 			Button_SetCheck(GetDlgItem(hwnd,IDC_AUTOSTART), autostart?BST_CHECKED:BST_UNCHECKED);
 			Button_SetCheck(GetDlgItem(hwnd,IDC_AUTOSTART_HIDE), hidden?BST_CHECKED:BST_UNCHECKED);
 			Button_Enable(GetDlgItem(hwnd,IDC_AUTOSTART_HIDE), autostart);
+			if (on_removable) {
+				Button_Enable(GetDlgItem(hwnd,IDC_AUTOSTART), 0);
+				Button_Enable(GetDlgItem(hwnd,IDC_AUTOSTART_HIDE), 0);
+			}
 		}
 	}
 	if (updatel10n) {
