@@ -63,6 +63,7 @@ wchar_t inipath[MAX_PATH];
 //Cool stuff
 int enabled = 1;
 int blocking = 0;
+int on_removable = 0;
 int vista = 0;
 int countdown = 0;
 
@@ -126,11 +127,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR szCmdLine, in
 	UpdateTray();
 	
 	//Associate icon to make it appear in the Vista+ shutdown dialog
-	SendMessage(g_hwnd, WM_SETICON, ICON_BIG, (LPARAM)icon[1]);
+	HICON app_icon = LoadImage(g_hinst, L"app_icon", IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
+	SendMessage(g_hwnd, WM_SETICON, ICON_BIG, (LPARAM)app_icon);
 	
 	//Check if we are in Vista+ and load functions if we are
-	//OSVERSIONINFO vi;
-	//vi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	OSVERSIONINFO vi = { sizeof(OSVERSIONINFO) };
 	GetVersionEx(&vi);
 	if (vi.dwMajorVersion >= 6) {
@@ -157,6 +157,32 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR szCmdLine, in
 	//Make Windows query this program first
 	if (SetProcessShutdownParameters(0x4FF,0) == 0) {
 		Error(L"SetProcessShutdownParameters(0x4FF)", L"This means that programs started before "APP_NAME" will be closed before the shutdown can be stopped.", GetLastError(), TEXT(__FILE__), __LINE__);
+	}
+	
+	//Check if we reside on a removable drive
+	wsprintf(txt, L"%c:\\", inipath[0]); // "X:\"
+	if (GetDriveType(txt) == DRIVE_REMOVABLE) {
+		on_removable = 1;
+	}
+	
+	//Register for safely remove hardware events
+	if (on_removable) {
+		wsprintf(txt, L"\\\\.\\%c:", inipath[0]); // "\\.\X:"
+		HANDLE vol = CreateFile(txt, GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		if (vol == INVALID_HANDLE_VALUE) {
+			#ifdef DEBUG
+			Error(L"CreateFile()", L"Failed to register for safely remove hardware events.", GetLastError(), TEXT(__FILE__), __LINE__);
+			#endif
+		}
+		else {
+			DEV_BROADCAST_HANDLE dev = { sizeof(DEV_BROADCAST_HANDLE), DBT_DEVTYP_HANDLE, 0, vol };
+			HDEVNOTIFY devnotify = RegisterDeviceNotification(g_hwnd, &dev, DEVICE_NOTIFY_WINDOW_HANDLE);
+			#ifdef DEBUG
+			if (devnotify == NULL) {
+				Error(L"RegisterDeviceNotification()", L"Failed to register for safely remove hardware events.", GetLastError(), TEXT(__FILE__), __LINE__);
+			}
+			#endif
+		}
 	}
 	
 	//Check for update
@@ -350,6 +376,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		KillTimer(hwnd, COUNTDOWN_TIMER);
 		ShutdownBlockReasonCreate(hwnd, l10n->gotit);
 		SetTimer(hwnd, DESTROY_TIMER, 5000, NULL);
+	}
+	else if (msg == WM_DEVICECHANGE && wParam == DBT_DEVICEQUERYREMOVE) {
+		//Quickly exit if the user uses the safely remove hardware tray icon
+		DestroyWindow(hwnd);
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
