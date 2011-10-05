@@ -47,10 +47,9 @@ SetCompressor /SOLID lzma
 
 ; Pages
 
-Page custom PageUpgrade PageUpgradeLeave
 Page custom PageLocation PageLocationLeave
+Page custom PageUpgrade PageUpgradeLeave
 !define MUI_PAGE_CUSTOMFUNCTION_PRE SkipPage
-!define MUI_PAGE_CUSTOMFUNCTION_SHOW HideBackButton
 !insertmacro MUI_PAGE_COMPONENTS
 !define MUI_PAGE_CUSTOMFUNCTION_PRE SkipPage
 !insertmacro MUI_PAGE_DIRECTORY
@@ -112,56 +111,13 @@ FunctionEnd
 !insertmacro CloseApp ""
 !insertmacro CloseApp "un."
 
-; Detect previous installation
-
-Var Upgradebox
-Var Uninstallbox
-
-Function PageUpgrade
-	ReadRegStr $0 HKLM "Software\${APP_NAME}" "Install_Dir"
-	IfFileExists $0 +2
-		Abort
-	
-	ReadRegStr $1 HKLM "Software\${APP_NAME}" "Version"
-	StrCmp $1 ${APP_VERSION} 0 +2
-		Abort
-	
-	nsDialogs::Create 1018
-	!insertmacro MUI_HEADER_TEXT "$(L10N_UPGRADE_TITLE)" "$(L10N_UPGRADE_SUBTITLE)"
-	${NSD_CreateLabel} 0 0 100% 20u "$(L10N_UPGRADE_HEADER)"
-	
-	${NSD_CreateRadioButton} 0 45 100% 10u "$(L10N_UPGRADE_UPGRADE)"
-	Pop $Upgradebox
-	${NSD_Check} $Upgradebox
-	${NSD_CreateLabel} 16 62 100% 20u "$(L10N_UPGRADE_INI)"
-	
-	${NSD_CreateRadioButton} 0 95 100% 10u "$(L10N_UPGRADE_INSTALL)"
-	
-	${NSD_CreateRadioButton} 0 130 100% 10u "$(L10N_UPGRADE_UNINSTALL)"
-	Pop $Uninstallbox
-	
-	nsDialogs::Show
-FunctionEnd
-
-Function PageUpgradeLeave
-	${NSD_GetState} $Upgradebox $UpgradeState
-	${NSD_GetState} $Uninstallbox $0
-	${If} $0 == ${BST_CHECKED}
-		Exec "$INSTDIR\Uninstall.exe"
-		Quit
-	${EndIf}
-FunctionEnd
-
 ; Install location page
 
 Var Flashbox
 Var Combobox
+Var Uninstallbox
 
 Function PageLocation
-	${If} $UpgradeState == ${BST_CHECKED}
-		Abort
-	${EndIf}
-	
 	Call HideBackButton
 	
 	nsDialogs::Create 1018
@@ -184,15 +140,26 @@ Function PageLocation
 	Pop $0
 	${NSD_OnClick} $0 "RefreshDrives"
 	
-	${NSD_CreateRadioButton} 0 135 100% 10u "$(L10N_LOCATION_SYSTEM)"
+	${NSD_CreateRadioButton} 0 120 100% 10u "$(L10N_LOCATION_SYSTEM)"
 	Pop $0
 	${NSD_OnClick} $0 "UpdateNextButton"
-	${NSD_CreateLabel} 16 152 100% 20u "$(L10N_LOCATION_SYSTEM2)"
+	${NSD_CreateLabel} 16 137 100% 20u "$(L10N_LOCATION_SYSTEM2)"
+	
+	IfFileExists $INSTDIR 0 +4
+		${NSD_CreateRadioButton} 0 183 100% 10u "$(L10N_UPGRADE_UNINSTALL)"
+		Pop $Uninstallbox
+		${NSD_OnClick} $Uninstallbox "UpdateNextButton"
 	
 	nsDialogs::Show
 FunctionEnd
 
 Function PageLocationLeave
+	${NSD_GetState} $Uninstallbox $0
+	${If} $0 == ${BST_CHECKED}
+		Exec "$INSTDIR\Uninstall.exe"
+		Quit
+	${EndIf}
+	
 	${NSD_GetState} $Flashbox $LocationState
 	${NSD_GetText} $Combobox $0
 	${If} $LocationState == ${BST_CHECKED}
@@ -223,6 +190,36 @@ Function UpdateNextButton
 	${Else}
 		EnableWindow $3 1
 	${EndIf}
+FunctionEnd
+
+; Detect previous installation
+
+Var Upgradebox
+
+Function PageUpgrade
+	${If} $LocationState == ${BST_CHECKED}
+		Abort
+	${EndIf}
+	
+	IfFileExists $INSTDIR +2
+		Abort
+	
+	nsDialogs::Create 1018
+	!insertmacro MUI_HEADER_TEXT "$(L10N_UPGRADE_TITLE)" "$(L10N_UPGRADE_SUBTITLE)"
+	${NSD_CreateLabel} 0 0 100% 20u "$(L10N_UPGRADE_HEADER)"
+	
+	${NSD_CreateRadioButton} 0 45 100% 10u "$(L10N_UPGRADE_UPGRADE)"
+	Pop $Upgradebox
+	${NSD_Check} $Upgradebox
+	${NSD_CreateLabel} 16 62 100% 20u "$(L10N_UPGRADE_INI)"
+	
+	${NSD_CreateRadioButton} 0 95 100% 10u "$(L10N_UPGRADE_INSTALL)"
+	
+	nsDialogs::Show
+FunctionEnd
+
+Function PageUpgradeLeave
+	${NSD_GetState} $Upgradebox $UpgradeState
 FunctionEnd
 
 ; Installer
@@ -287,7 +284,7 @@ Section "${APP_NAME}" sec_app
 	
 	!insertmacro Lang en-US ${LANG_ENGLISH}
 	
-	${IfNot} $LocationState == ${BST_CHECKED}
+	${If} $LocationState == ${BST_UNCHECKED}
 		;Update registry
 		WriteRegStr HKLM "Software\${APP_NAME}" "Install_Dir" "$INSTDIR"
 		WriteRegStr HKLM "Software\${APP_NAME}" "Version" "${APP_VERSION}"
@@ -299,6 +296,7 @@ Section "${APP_NAME}" sec_app
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayIcon" '"$INSTDIR\${APP_NAME}.exe"'
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayVersion" "${APP_VERSION}"
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "HelpLink" "${APP_URL}"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "Publisher" "Stefan Sundin"
 		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "NoModify" 1
 		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "NoRepair" 1
 	${EndIf}
@@ -339,8 +337,7 @@ Function .onInit
 	${If} ${RunningX64}
 		SectionSetText ${sec_app} "${APP_NAME} (x64)"
 		;Only set x64 installation dir if not already installed
-		ReadRegStr $0 HKLM "Software\${APP_NAME}" "Install_Dir"
-		IfFileExists $0 +2
+		IfFileExists $INSTDIR +2
 			StrCpy $INSTDIR "$PROGRAMFILES64\${APP_NAME}"
 	${EndIf}
 	!endif

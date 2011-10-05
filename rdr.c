@@ -168,7 +168,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR szCmdLine, in
 	//Register for safely remove hardware events
 	if (on_removable) {
 		wsprintf(txt, L"\\\\.\\%c:", inipath[0]); // "\\.\X:"
-		HANDLE vol = CreateFile(txt, GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		HANDLE vol = CreateFile(txt, 0, FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 		if (vol == INVALID_HANDLE_VALUE) {
 			#ifdef DEBUG
 			Error(L"CreateFile()", L"Failed to register for safely remove hardware events.", GetLastError(), TEXT(__FILE__), __LINE__);
@@ -182,6 +182,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR szCmdLine, in
 				Error(L"RegisterDeviceNotification()", L"Failed to register for safely remove hardware events.", GetLastError(), TEXT(__FILE__), __LINE__);
 			}
 			#endif
+			CloseHandle(vol);
 		}
 	}
 	
