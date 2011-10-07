@@ -1,0 +1,10 @@
+#summary Other programs that do the same thing
+#labels Phase-QA
+
+= Freeware =
+  * [http://www.bgreco.net/reminder.php Flash Drive Reminder]
+
+= Nagware =
+  * [http://freesoftwareproject.weebly.com/free-usb-guard.html Free USB Guard]
+
+Feel free to add more programs in the comments below.
