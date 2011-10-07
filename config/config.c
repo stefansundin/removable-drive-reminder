@@ -228,6 +228,7 @@ INT_PTR CALLBACK AdvancedPageDialogProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 			SetDlgItemText(hwnd, IDC_ADVANCED_BOX,    l10n->advanced_box);
 			SetDlgItemText(hwnd, IDC_CHECKONSTARTUP,  l10n->advanced_checkonstartup);
 			SetDlgItemText(hwnd, IDC_BETA,            l10n->advanced_beta);
+			SetDlgItemText(hwnd, IDC_CHECKNOW,        l10n->advanced_checknow);
 		}
 	}
 	return FALSE;

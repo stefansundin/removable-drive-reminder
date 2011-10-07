@@ -14,6 +14,8 @@ struct strings {
 	wchar_t *menu_config;
 	wchar_t *menu_about;
 	wchar_t *menu_exit;
+	
+	/* update */
 	wchar_t *update_balloon;
 	wchar_t *update_dialog;
 	wchar_t *update_nonew;
@@ -36,6 +38,7 @@ struct strings {
 	wchar_t *advanced_box;
 	wchar_t *advanced_checkonstartup;
 	wchar_t *advanced_beta;
+	wchar_t *advanced_checknow;
 	wchar_t *about_box;
 	wchar_t *about_version;
 	wchar_t *about_author;

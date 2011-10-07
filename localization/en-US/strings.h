@@ -19,9 +19,11 @@ struct strings en_US = {
  /* menu_disable   */ L"Disable",
  /* menu_hide      */ L"Hide tray",
  /* menu_update    */ L"Update available!",
- /* menu_settings  */ L"Open configuration",
+ /* menu_config    */ L"Open configuration",
  /* menu_about     */ L"About",
  /* menu_exit      */ L"Exit",
+ 
+ /* === update === */
  /* update_balloon */ L"New version found!",
  /* update_dialog  */ L"A new version is available. Go to website?",
  /* update_nonew   */ L"No update available.",
@@ -35,7 +37,7 @@ struct strings en_US = {
  /* _about            */ L"About",
  /* general tab */
  /* _box              */ L"General settings",
- /* _playsound        */ L"Play beep.wav as an extra measure",
+ /* _playsound        */ L"&Play beep.wav as an extra measure",
  /* _ignore           */ L"Ignore these drive letters:",
  /* _language         */ L"Language:",
  /* _helptranslate    */ L"How can I help translate?",
@@ -47,6 +49,7 @@ struct strings en_US = {
  /* _box              */ L"Advanced settings",
  /* _checkonstartup   */ L"Automatically check for &updates",
  /* _beta             */ L"Check for &beta versions",
+ /* _checknow         */ L"&Check now",
  /* about tab */
  /* _box              */ L"About "APP_NAME,
  /* _version          */ L"Version "APP_VERSION,
