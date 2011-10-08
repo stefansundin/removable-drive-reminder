@@ -1,6 +1,9 @@
 #summary Other programs that do the same thing
 #labels Phase-QA
 
+= Open source =
+  * [http://kirrus.co.uk/2011/02/usb-key-reminder-script/ USB Key reminder script] (group policy script)
+
 = Freeware =
   * [http://www.bgreco.net/reminder.php Flash Drive Reminder]
 
