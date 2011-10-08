@@ -6,6 +6,7 @@
 
 = Freeware =
   * [http://www.bgreco.net/reminder.php Flash Drive Reminder]
+  * [http://www.usbalert.nl/ USB Alert]
 
 = Nagware =
   * [http://freesoftwareproject.weebly.com/free-usb-guard.html Free USB Guard]
