@@ -155,7 +155,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR szCmdLine, in
 	}
 	
 	//Make Windows query this program first
-	if (SetProcessShutdownParameters(0x4FF,0) == 0) {
+	if (SetProcessShutdownParameters(0x3FF,0) == 0) {
 		Error(L"SetProcessShutdownParameters(0x4FF)", L"This means that programs started before "APP_NAME" will be closed before the shutdown can be stopped.", GetLastError(), TEXT(__FILE__), __LINE__);
 	}
 	

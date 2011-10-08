@@ -126,7 +126,6 @@ Function PageLocation
 	
 	${NSD_CreateRadioButton} 0 45 100% 10u "$(L10N_LOCATION_FLASH)"
 	Pop $Flashbox
-	${NSD_Check} $Flashbox
 	${NSD_OnClick} $Flashbox "UpdateNextButton"
 	
 	${NSD_CreateLabel} 16 62 100% 10u "$(L10N_LOCATION_FLASH2)"
@@ -144,6 +143,13 @@ Function PageLocation
 	Pop $0
 	${NSD_OnClick} $0 "UpdateNextButton"
 	${NSD_CreateLabel} 16 137 100% 20u "$(L10N_LOCATION_SYSTEM2)"
+	
+	${NSD_GetText} $Combobox $1
+	${If} $1 == ""
+		${NSD_Check} $0
+	${Else}
+		${NSD_Check} $Flashbox
+	${EndIf}
 	
 	IfFileExists $INSTDIR 0 +4
 		${NSD_CreateRadioButton} 0 183 100% 10u "$(L10N_UPGRADE_UNINSTALL)"
