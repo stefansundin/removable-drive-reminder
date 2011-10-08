@@ -1,0 +1,18 @@
+#summary How to submit a translation to Removable Drive Reminder
+#labels Phase-Implementation
+
+= Introduction =
+
+Okay, so you want to help? Great!
+
+I do however need *you* to understand some things:
+  * Translating is a process. We will do several iterations to make sure your translation is of high quality.
+  * You *must* keep your translation up to date in the future! If you do not respond to emails your translation will be removed!
+  * Your translation will be included in the next version I release. I can compile it for you as soon as I get it though.
+  * The program is fully unicode enabled, so all kinds of characters should be possible.
+
+= That makes sense =
+
+So you still want to help? Ok, let's do this!
+
+This whole process starts by you [mailto:recover89@gmail.com?subject=Translate emailing me] and asking to translate Removable Drive Reminder. I will then instruct you on how you proceed. It's as simple as that!
