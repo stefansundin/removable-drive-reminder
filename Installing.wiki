@@ -1,0 +1,27 @@
+#summary Tips for installing
+#labels Featured,Phase-Deploy
+
+= Introduction =
+
+I offer two kinds of downloads. An installer and an archive.
+
+
+== Installer ==
+
+You can use the installer to install to the system as well as installing directly to a USB stick.
+
+The installer will request administrator privileges when it is run. I did this since otherwise you have to manually run it as administrator to install to the _Program Files_ directory. If you do not have administrator privileges then simply use the archive instead.
+
+
+== Archive ==
+
+The archive contains the same files as the installer.
+
+You can use the archive to install to USB sticks as well. Extracting the files to the USB stick is exactly the same as using the installer.
+
+
+= Running the program =
+
+If you install to a USB stick, then you have to make sure that you somehow launch the program after you plug in your USB stick. The program can not warn you if it isn't running!
+
+If you install the program to a public computer where you only have some control over the files (e.g. in your school's lab computers), then you probably don't have access over the computer's autorun location, so you can not make the program launch automatically when you log in. One option then is to make a simple shortcut on the desktop, but you will have to remember to double-click on this shortcut. An even better approach is to replace one of the shortcuts to a program you *always* run when you use that computer, and make it instead launch both the program and Removable Drive Reminder. This option is more forgiving than simply placing a shortcut on the desktop (which you'll forget to click).
