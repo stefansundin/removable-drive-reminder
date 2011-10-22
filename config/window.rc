@@ -20,9 +20,9 @@ FONT 8, "Ms Shell Dlg", 400, 0, 1
 {
     CONTROL         "<a href=""http://stefansundin.com/"">http://stefansundin.com/</a>", IDC_STATIC, "SysLink", 0x50020000, 75, 50, 130, 10
     DEFPUSHBUTTON   "Donate", IDC_DONATE, 20, 161, 45, 14
-    GROUPBOX        "About", IDC_ABOUT_BOX, 3, 1, 212, 115
+    GROUPBOX        "About", IDC_ABOUT_BOX, 3, 1, 212, 100
     LTEXT           "Version", IDC_VERSION, 75, 15, 130, 8, SS_LEFT
-    CONTROL         "<a href=""http://code.google.com/p/removable-drive-reminder/"">Go to website</a>", IDC_STATIC, "SysLink", 0x50020000, 75, 25, 130, 10
+    CONTROL         "<a href=""http://code.google.com/"">Website</a>", IDC_WEBSITE, "SysLink", 0x50020000, 75, 25, 130, 10
     LTEXT           "Created by Stefan Sundin", IDC_AUTHOR, 75, 40, 130, 8, SS_LEFT
     LTEXT           "Free and open source software!", IDC_LICENSE, 10, 65, 200, 20, SS_LEFT
     GROUPBOX        "Donations", IDC_DONATIONS_BOX, 15, 128, 195, 51
@@ -39,7 +39,7 @@ FONT 8, "Ms Shell Dlg", 400, 0, 1
 {
     AUTOCHECKBOX    "Update", IDC_CHECKONSTARTUP, 10, 15, 195, 8
     AUTOCHECKBOX    "Beta", IDC_BETA, 10, 30, 195, 8
-    GROUPBOX        "Advanced", IDC_ADVANCED_BOX, 3, 1, 212, 80
+    GROUPBOX        "Advanced", IDC_ADVANCED_BOX, 3, 1, 212, 100
     PUSHBUTTON      "Check", IDC_CHECKNOW, 10, 45, 58, 14
 }
 
@@ -56,7 +56,7 @@ FONT 8, "Ms Shell Dlg", 400, 0, 1
     COMBOBOX        IDC_LANGUAGE, 10, 70, 100, 30, WS_TABSTOP | CBS_DROPDOWNLIST | CBS_HASSTRINGS
     AUTOCHECKBOX    "Autostart", IDC_AUTOSTART, 10, 137, 175, 8
     AUTOCHECKBOX    "Hide tray", IDC_AUTOSTART_HIDE, 10, 150, 175, 8
-    GROUPBOX        "General", IDC_GENERAL_BOX, 3, 1, 212, 120
+    GROUPBOX        "General", IDC_GENERAL_BOX, 3, 1, 212, 100
     LTEXT           "Ignore", IDC_IGNORE_HEADER, 10, 30, 200, 8, SS_LEFT
     LTEXT           "Language:", IDC_LANGUAGE_HEADER, 10, 60, 100, 8, SS_LEFT
     GROUPBOX        "Autostart", IDC_AUTOSTART_BOX, 3, 125, 212, 40

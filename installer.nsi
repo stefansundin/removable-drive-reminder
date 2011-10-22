@@ -221,7 +221,7 @@ FunctionEnd
 
 ; Installer
 
-Section "$(L10N_UPDATE_SECTION)" sec_update
+Section "" sec_update
 	NSISdl::download "${APP_UPDATEURL}" "$TEMP\${APP_NAME}-updatecheck"
 	Pop $0
 	StrCmp $0 "success" +3
@@ -248,7 +248,7 @@ Section "$(L10N_UPDATE_SECTION)" sec_update
 	done:
 SectionEnd
 
-Section "${APP_NAME}" sec_app
+Section
 	SectionIn RO
 	SetOutPath "$INSTDIR"
 	
@@ -293,6 +293,7 @@ Section "${APP_NAME}" sec_app
 	autorun_done:
 	
 	!insertmacro Lang en-US ${LANG_ENGLISH}
+	!insertmacro Lang sv-SE ${LANG_SWEDISH}
 	
 	${If} $DriveType != ${DRIVE_REMOVABLE}
 		;Create start menu shortcut
@@ -331,7 +332,6 @@ Function .onInit
 	;Detect x64
 	!ifdef x64
 	${If} ${RunningX64}
-		SectionSetText ${sec_app} "${APP_NAME} (x64)"
 		;Only set x64 installation dir if not already installed
 		IfFileExists $INSTDIR +2
 			StrCpy $INSTDIR "$PROGRAMFILES64\${APP_NAME}"

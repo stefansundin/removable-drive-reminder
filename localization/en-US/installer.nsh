@@ -26,10 +26,6 @@ LangString L10N_LOCATION_FLASH2   ${LANG} "This will help you remember your flas
 LangString L10N_LOCATION_FLASH3   ${LANG} "Drive:"
 LangString L10N_LOCATION_REFRESH  ${LANG} "Refresh list"
 
-LangString L10N_UPDATE_SECTION    ${LANG} "Check for update before installing"
 LangString L10N_UPDATE_DIALOG     ${LANG} "A new version is available.$\nAbort install and go to website?"
-LangString L10N_SHORTCUT          ${LANG} "Start Menu Shortcut"
-LangString L10N_AUTOSTART         ${LANG} "Autostart"
-LangString L10N_AUTOSTART_HIDE    ${LANG} "Hide tray"
 
 !undef LANG

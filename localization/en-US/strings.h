@@ -40,7 +40,6 @@ struct strings en_US = {
  /* _playsound        */ L"&Play beep.wav as an extra measure",
  /* _ignore           */ L"Ignore these drive letters:",
  /* _language         */ L"Language:",
- /* _helptranslate    */ L"How can I help translate?",
  /* _autostart_box    */ L"Autostart",
  /* _autostart        */ L"S&tart "APP_NAME" when logging on",
  /* _autostart_hide   */ L"&Hide tray",
@@ -53,6 +52,7 @@ struct strings en_US = {
  /* about tab */
  /* _box              */ L"About "APP_NAME,
  /* _version          */ L"Version "APP_VERSION,
+ /* _website          */ L"Go to website",
  /* _author           */ L"Created by Stefan Sundin",
  /* _license          */ APP_NAME L" is free and open source software! Feel free to redistribute!",
  /* _donations_box    */ L"Donations",

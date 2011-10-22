@@ -30,7 +30,6 @@ struct strings {
 	wchar_t *general_playsound;
 	wchar_t *general_ignore;
 	wchar_t *general_language;
-	wchar_t *general_helptranslate;
 	wchar_t *general_autostart_box;
 	wchar_t *general_autostart;
 	wchar_t *general_autostart_hide;
@@ -41,6 +40,7 @@ struct strings {
 	wchar_t *advanced_checknow;
 	wchar_t *about_box;
 	wchar_t *about_version;
+	wchar_t *about_website;
 	wchar_t *about_author;
 	wchar_t *about_license;
 	wchar_t *about_donations_box;
@@ -49,12 +49,14 @@ struct strings {
 };
 
 #include "en-US/strings.h"
+#include "sv-SE/strings.h"
 
 struct {
 	wchar_t *code;
 	struct strings *strings;
 } languages[] = {
 	{ L"en-US", &en_US },
+	{ L"sv-SE", &sv_SE },
 	{ NULL }
 };
 

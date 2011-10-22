@@ -141,8 +141,7 @@ INT_PTR CALLBACK GeneralPageDialogProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
 			int i = ComboBox_GetCurSel(control);
 			if (languages[i].code == NULL) {
 				ShellExecute(NULL, L"open", L"http://code.google.com/p/removable-drive-reminder/wiki/Translate", NULL, NULL, SW_SHOWNORMAL);
-				for (i=0; l10n != languages[i].strings; i++) {}
-				ComboBox_SetCurSel(control, i);
+				ComboBox_SetCurSel(control, 0);
 			}
 			else {
 				l10n = languages[i].strings;
@@ -193,7 +192,9 @@ INT_PTR CALLBACK GeneralPageDialogProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
 		
 		//Language
 		ComboBox_DeleteString(GetDlgItem(hwnd,IDC_LANGUAGE), sizeof(languages)/sizeof(languages[0])-1);
-		ComboBox_AddString(GetDlgItem(hwnd,IDC_LANGUAGE), l10n->general_helptranslate);
+		if (l10n == &en_US) {
+			ComboBox_AddString(GetDlgItem(hwnd,IDC_LANGUAGE), L"How can I help translate?");
+		}
 	}
 	return FALSE;
 }
@@ -251,6 +252,9 @@ INT_PTR CALLBACK AboutPageDialogProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM 
 			SetDlgItemText(hwnd, IDC_DONATIONS_BOX,   l10n->about_donations_box);
 			SetDlgItemText(hwnd, IDC_DONATIONS_PLEA,  l10n->about_donations_plea);
 			SetDlgItemText(hwnd, IDC_DONATE,          l10n->about_donate);
+			wchar_t txt[200];
+			wsprintf(txt, L"<a href=\""APP_URL"\">%s</a>", l10n->about_website);
+			SetDlgItemText(hwnd, IDC_WEBSITE, txt);
 		}
 	}
 	
