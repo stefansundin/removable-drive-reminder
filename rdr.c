@@ -95,6 +95,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR szCmdLine, in
 	WM_HIDETRAY = RegisterWindowMessage(L"HideTray");
 	HWND previnst = FindWindow(APP_NAME, NULL);
 	if (previnst != NULL) {
+		if (!strcmp(szCmdLine,"-quiet")) {
+			return 0; //-quiet simply does nothing if the program is already running
+		}
 		PostMessage(previnst, WM_UPDATESETTINGS, 0, 0);
 		if (!hide) {
 			PostMessage(previnst, WM_OPENCONFIG, 0, 0);

@@ -24,7 +24,7 @@ LangString L10N_LOCATION_FLASH2   ${LANG} "This will help you remember your flas
 LangString L10N_LOCATION_FLASH3   ${LANG} "Drive:"
 LangString L10N_LOCATION_REFRESH  ${LANG} "Refresh list"
 LangString L10N_LOCATION_SYSTEM   ${LANG} "Install to the &system."
-LangString L10N_LOCATION_SYSTEM2  ${LANG} "This is usable for system administrators. Be sure to read the wiki to learn how to do easy deployment."
+LangString L10N_LOCATION_SYSTEM2  ${LANG} "If you are a system administrator, be sure to read the wiki to learn how to easily do mass deployment."
 
 LangString L10N_UPDATE_SECTION    ${LANG} "Check for update before installing"
 LangString L10N_UPDATE_DIALOG     ${LANG} "A new version is available.$\nAbort install and go to website?"

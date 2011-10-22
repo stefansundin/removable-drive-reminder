@@ -8,6 +8,8 @@
 ;Requires AccessControl plug-in
 ;http://nsis.sourceforge.net/AccessControl_plug-in
 
+;For silent install you can use these switches: /S /D=C:\installdir
+
 !define APP_NAME      "Removable Drive Reminder"
 !define APP_VERSION   "0.1"
 !define APP_URL       "http://code.google.com/p/removable-drive-reminder/"
@@ -20,6 +22,7 @@
 !include "LogicLib.nsh"
 !include "StrFunc.nsh"
 !include "FileFunc.nsh"
+!include "WinCore.nsh"
 !include "x64.nsh"
 ${StrLoc}
 
@@ -50,6 +53,7 @@ SetCompressor /SOLID lzma
 Page custom PageLocation PageLocationLeave
 Page custom PageUpgrade PageUpgradeLeave
 !define MUI_PAGE_CUSTOMFUNCTION_PRE SkipPage
+!define MUI_PAGE_CUSTOMFUNCTION_SHOW HideBackButton
 !insertmacro MUI_PAGE_COMPONENTS
 !define MUI_PAGE_CUSTOMFUNCTION_PRE SkipPage
 !insertmacro MUI_PAGE_DIRECTORY
@@ -61,8 +65,8 @@ Page custom PageUpgrade PageUpgradeLeave
 
 ; Variables
 
+Var DriveType
 Var UpgradeState
-Var LocationState
 Var AutostartSectionState
 
 ; Languages
@@ -99,10 +103,16 @@ Function ${un}CloseApp
 	IntCmp $0 0 done
 		DetailPrint "Closing running ${APP_NAME}."
 		SendMessage $0 ${WM_CLOSE} 0 0 /TIMEOUT=500
+		
+		StrCpy $1 0
 		waitloop:
 			Sleep 10
+			;Check if app has closed
 			FindWindow $0 "${APP_NAME}" ""
 			IntCmp $0 0 closed waitloop waitloop
+			;Wait max 1 second
+			IntOp $1 $1 + 10
+			IntCmp $1 1000 closed 0 closed
 	closed:
 	Sleep 100 ;Sleep a little extra to let Windows do its thing.
 	done:
@@ -124,32 +134,25 @@ Function PageLocation
 	!insertmacro MUI_HEADER_TEXT "$(L10N_LOCATION_TITLE)" "$(L10N_LOCATION_SUBTITLE)"
 	${NSD_CreateLabel} 0 0 100% 20u "$(L10N_LOCATION_HEADER)"
 	
-	${NSD_CreateRadioButton} 0 45 100% 10u "$(L10N_LOCATION_FLASH)"
+	${NSD_CreateRadioButton} 0 45 100% 10u "$(L10N_LOCATION_SYSTEM)"
+	Pop $0
+	${NSD_OnClick} $0 "UpdateNextButton"
+	${NSD_Check} $0
+	${NSD_CreateLabel} 16 62 100% 20u "$(L10N_LOCATION_SYSTEM2)"
+	
+	${NSD_CreateRadioButton} 0 105 100% 10u "$(L10N_LOCATION_FLASH)"
 	Pop $Flashbox
 	${NSD_OnClick} $Flashbox "UpdateNextButton"
+	${NSD_CreateLabel} 16 122 100% 10u "$(L10N_LOCATION_FLASH2)"
+	${NSD_CreateLabel} 16 143 35 10u "$(L10N_LOCATION_FLASH3)"
 	
-	${NSD_CreateLabel} 16 62 100% 10u "$(L10N_LOCATION_FLASH2)"
-	${NSD_CreateLabel} 16 83 35 10u "$(L10N_LOCATION_FLASH3)"
-	
-	${NSD_CreateDropList} 55 80 45 30
+	${NSD_CreateDropList} 55 140 45 30
 	Pop $Combobox
 	Call RefreshDrives
 	
-	${NSD_CreateButton} 115 79 80 23 "$(L10N_LOCATION_REFRESH)"
+	${NSD_CreateButton} 110 139 80 23 "$(L10N_LOCATION_REFRESH)"
 	Pop $0
 	${NSD_OnClick} $0 "RefreshDrives"
-	
-	${NSD_CreateRadioButton} 0 120 100% 10u "$(L10N_LOCATION_SYSTEM)"
-	Pop $0
-	${NSD_OnClick} $0 "UpdateNextButton"
-	${NSD_CreateLabel} 16 137 100% 20u "$(L10N_LOCATION_SYSTEM2)"
-	
-	${NSD_GetText} $Combobox $1
-	${If} $1 == ""
-		${NSD_Check} $0
-	${Else}
-		${NSD_Check} $Flashbox
-	${EndIf}
 	
 	IfFileExists $INSTDIR 0 +4
 		${NSD_CreateRadioButton} 0 183 100% 10u "$(L10N_UPGRADE_UNINSTALL)"
@@ -166,10 +169,11 @@ Function PageLocationLeave
 		Quit
 	${EndIf}
 	
-	${NSD_GetState} $Flashbox $LocationState
-	${NSD_GetText} $Combobox $0
-	${If} $LocationState == ${BST_CHECKED}
+	${NSD_GetState} $Flashbox $0
+	${If} $0 == ${BST_CHECKED}
+		${NSD_GetText} $Combobox $0
 		StrCpy $INSTDIR "$0"
+		StrCpy $DriveType ${DRIVE_REMOVABLE}
 	${EndIf}
 FunctionEnd
 
@@ -203,12 +207,14 @@ FunctionEnd
 Var Upgradebox
 
 Function PageUpgrade
-	${If} $LocationState == ${BST_CHECKED}
+	${If} $DriveType == ${DRIVE_REMOVABLE}
 		Abort
 	${EndIf}
 	
 	IfFileExists $INSTDIR +2
 		Abort
+	
+	Call HideBackButton
 	
 	nsDialogs::Create 1018
 	!insertmacro MUI_HEADER_TEXT "$(L10N_UPGRADE_TITLE)" "$(L10N_UPGRADE_SUBTITLE)"
@@ -259,11 +265,19 @@ SectionEnd
 
 Section "${APP_NAME}" sec_app
 	SectionIn RO
+	SetOutPath "$INSTDIR"
+	
+	;Get drive type
+	StrCpy $0 "$INSTDIR" 1
+	StrCpy $0 "$0:\"
+	System::Call /NOUNLOAD 'kernel32::GetDriveType(t "$0") i .r1'
+	StrCpy $DriveType $1
+	${If} $DriveType == ${DRIVE_REMOVABLE}
+		MessageBox MB_OK "removable drive!"
+	${EndIf}
 	
 	;Close app if running
 	Call CloseApp
-	
-	SetOutPath "$INSTDIR"
 	
 	;Rename old ini file if it exists
 	IfFileExists "${APP_NAME}.ini" 0 +3
@@ -282,15 +296,13 @@ Section "${APP_NAME}" sec_app
 	!endif
 	File "${APP_NAME}.ini"
 	File "beep.wav"
-	${If} $LocationState == ${BST_CHECKED}
-		IfFileExists "autorun.inf" +2 0
-			;We don't want to ruin people's autorun.inf
-			File "autorun.inf"
-	${EndIf}
+	IfFileExists "autorun.inf" +2 0
+		;We don't want to ruin people's autorun.inf
+		File "autorun.inf"
 	
 	!insertmacro Lang en-US ${LANG_ENGLISH}
 	
-	${If} $LocationState == ${BST_UNCHECKED}
+	${If} $DriveType != ${DRIVE_REMOVABLE}
 		;Update registry
 		WriteRegStr HKLM "Software\${APP_NAME}" "Install_Dir" "$INSTDIR"
 		WriteRegStr HKLM "Software\${APP_NAME}" "Version" "${APP_VERSION}"
@@ -326,7 +338,7 @@ FunctionEnd
 ;Used when upgrading to skip the components and directory pages
 Function SkipPage
 	${If} $UpgradeState == ${BST_CHECKED}
-	${OrIf} $LocationState == ${BST_CHECKED}
+	${OrIf} $DriveType == ${DRIVE_REMOVABLE}
 		!insertmacro UnselectSection ${sec_shortcut}
 		Abort
 	${EndIf}
@@ -350,10 +362,12 @@ Function .onInit
 	;Display language selection and add tray if program is running
 	!insertmacro MUI_LANGDLL_DISPLAY
 	Call AddTray
-	;If silent, deselect check for update
+	
+	;Handle silent install
 	IfSilent 0 autostart_check
 		!insertmacro UnselectSection ${sec_update}
 	autostart_check:
+	
 	;Determine current autostart setting
 	StrCpy $AutostartSectionState 0
 	ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "${APP_NAME}"
@@ -405,11 +419,12 @@ FunctionEnd
 
 Section "Uninstall"
 	Call un.CloseApp
-
+	
 	Delete /REBOOTOK "$INSTDIR\${APP_NAME}.exe"
 	Delete /REBOOTOK "$INSTDIR\${APP_NAME}.ini"
 	Delete /REBOOTOK "$INSTDIR\${APP_NAME}-old.ini"
 	Delete /REBOOTOK "$INSTDIR\beep.wav"
+	Delete /REBOOTOK "$INSTDIR\autorun.inf"
 	Delete /REBOOTOK "$INSTDIR\Uninstall.exe"
 	RMDir  /REBOOTOK "$INSTDIR"
 
