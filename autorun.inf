@@ -1,8 +1,8 @@
 [autorun]
 ;label=
-icon=Removable Drive Reminder.exe
-action=Remind me to remove flash drive
-open=Removable Drive Reminder.exe
+icon=Removable Drive Reminder\Removable Drive Reminder.exe
+open=Removable Drive Reminder\Removable Drive Reminder.exe
+action=Remind me to remove USB drive
 
 ;The autorun option has been disabled for USB drives in all updated versions of Windows.
 ;This file can now only be used for setting the icon and label.

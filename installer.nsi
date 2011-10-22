@@ -5,9 +5,6 @@
 ;the Free Software Foundation, either version 3 of the License, or
 ;(at your option) any later version.
 
-;Requires AccessControl plug-in
-;http://nsis.sourceforge.net/AccessControl_plug-in
-
 ;For silent install you can use these switches: /S /D=C:\installdir
 
 !define APP_NAME      "Removable Drive Reminder"
@@ -20,16 +17,14 @@
 !include "MUI2.nsh"
 !include "Sections.nsh"
 !include "LogicLib.nsh"
-!include "StrFunc.nsh"
 !include "FileFunc.nsh"
 !include "WinCore.nsh"
 !include "x64.nsh"
-${StrLoc}
 
 ; General
 
 Name "${APP_NAME} ${APP_VERSION}"
-OutFile "build/${APP_NAME}-${APP_VERSION}.exe"
+OutFile "build\${APP_NAME}-${APP_VERSION}.exe"
 InstallDir "$PROGRAMFILES\${APP_NAME}"
 InstallDirRegKey HKLM "Software\${APP_NAME}" "Install_Dir"
 RequestExecutionLevel admin
@@ -43,19 +38,12 @@ SetCompressor /SOLID lzma
 !define MUI_LANGDLL_REGISTRY_KEY "Software\${APP_NAME}" 
 !define MUI_LANGDLL_REGISTRY_VALUENAME "Language"
 
-!define MUI_COMPONENTSPAGE_NODESC
-
-!define MUI_FINISHPAGE_RUN
-!define MUI_FINISHPAGE_RUN_FUNCTION "Launch"
-
 ; Pages
 
 Page custom PageLocation PageLocationLeave
 Page custom PageUpgrade PageUpgradeLeave
 !define MUI_PAGE_CUSTOMFUNCTION_PRE SkipPage
 !define MUI_PAGE_CUSTOMFUNCTION_SHOW HideBackButton
-!insertmacro MUI_PAGE_COMPONENTS
-!define MUI_PAGE_CUSTOMFUNCTION_PRE SkipPage
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
@@ -67,7 +55,6 @@ Page custom PageUpgrade PageUpgradeLeave
 
 Var DriveType
 Var UpgradeState
-Var AutostartSectionState
 
 ; Languages
 
@@ -138,41 +125,30 @@ Function PageLocation
 	Pop $0
 	${NSD_OnClick} $0 "UpdateNextButton"
 	${NSD_Check} $0
-	${NSD_CreateLabel} 16 62 100% 20u "$(L10N_LOCATION_SYSTEM2)"
+	${NSD_CreateLabel} 16 62 95% 20u "$(L10N_LOCATION_SYSTEM2)"
 	
 	${NSD_CreateRadioButton} 0 105 100% 10u "$(L10N_LOCATION_FLASH)"
 	Pop $Flashbox
 	${NSD_OnClick} $Flashbox "UpdateNextButton"
-	${NSD_CreateLabel} 16 122 100% 10u "$(L10N_LOCATION_FLASH2)"
-	${NSD_CreateLabel} 16 143 35 10u "$(L10N_LOCATION_FLASH3)"
+	${NSD_CreateLabel} 16 122 95% 18u "$(L10N_LOCATION_FLASH2)"
 	
-	${NSD_CreateDropList} 55 140 45 30
+	${NSD_CreateLabel} 16 158 35 10u "$(L10N_LOCATION_FLASH3)"
+	${NSD_CreateDropList} 55 155 45 30
 	Pop $Combobox
 	Call RefreshDrives
 	
-	${NSD_CreateButton} 110 139 80 23 "$(L10N_LOCATION_REFRESH)"
+	${NSD_CreateButton} 110 154 80 23 "$(L10N_LOCATION_REFRESH)"
 	Pop $0
 	${NSD_OnClick} $0 "RefreshDrives"
-	
-	IfFileExists $INSTDIR 0 +4
-		${NSD_CreateRadioButton} 0 183 100% 10u "$(L10N_UPGRADE_UNINSTALL)"
-		Pop $Uninstallbox
-		${NSD_OnClick} $Uninstallbox "UpdateNextButton"
 	
 	nsDialogs::Show
 FunctionEnd
 
 Function PageLocationLeave
-	${NSD_GetState} $Uninstallbox $0
-	${If} $0 == ${BST_CHECKED}
-		Exec "$INSTDIR\Uninstall.exe"
-		Quit
-	${EndIf}
-	
 	${NSD_GetState} $Flashbox $0
 	${If} $0 == ${BST_CHECKED}
 		${NSD_GetText} $Combobox $0
-		StrCpy $INSTDIR "$0"
+		StrCpy $INSTDIR "$0${APP_NAME}"
 		StrCpy $DriveType ${DRIVE_REMOVABLE}
 	${EndIf}
 FunctionEnd
@@ -223,14 +199,23 @@ Function PageUpgrade
 	${NSD_CreateRadioButton} 0 45 100% 10u "$(L10N_UPGRADE_UPGRADE)"
 	Pop $Upgradebox
 	${NSD_Check} $Upgradebox
-	${NSD_CreateLabel} 16 62 100% 20u "$(L10N_UPGRADE_INI)"
+	${NSD_CreateLabel} 16 62 95% 20u "$(L10N_UPGRADE_INI)"
 	
 	${NSD_CreateRadioButton} 0 95 100% 10u "$(L10N_UPGRADE_INSTALL)"
+	
+	${NSD_CreateRadioButton} 0 130 100% 10u "$(L10N_UPGRADE_UNINSTALL)"
+	Pop $Uninstallbox
 	
 	nsDialogs::Show
 FunctionEnd
 
 Function PageUpgradeLeave
+	${NSD_GetState} $Uninstallbox $0
+	${If} $0 == ${BST_CHECKED}
+		Exec "$INSTDIR\Uninstall.exe"
+		Quit
+	${EndIf}
+	
 	${NSD_GetState} $Upgradebox $UpgradeState
 FunctionEnd
 
@@ -269,12 +254,9 @@ Section "${APP_NAME}" sec_app
 	
 	;Get drive type
 	StrCpy $0 "$INSTDIR" 1
-	StrCpy $0 "$0:\"
-	System::Call /NOUNLOAD 'kernel32::GetDriveType(t "$0") i .r1'
+	StrCpy $R0 "$0:\"
+	System::Call 'kernel32::GetDriveType(t "$R0") i .r1'
 	StrCpy $DriveType $1
-	${If} $DriveType == ${DRIVE_REMOVABLE}
-		MessageBox MB_OK "removable drive!"
-	${EndIf}
 	
 	;Close app if running
 	Call CloseApp
@@ -296,13 +278,26 @@ Section "${APP_NAME}" sec_app
 	!endif
 	File "${APP_NAME}.ini"
 	File "beep.wav"
-	IfFileExists "autorun.inf" +2 0
+	
+	;autorun.inf
+	File "autorun.inf"
+	${If} $DriveType == ${DRIVE_REMOVABLE}
 		;We don't want to ruin people's autorun.inf
-		File "autorun.inf"
+		IfFileExists "$R0\autorun.inf" autorun_done 0
+			;Update paths
+			CopyFiles /SILENT "$INSTDIR\autorun.inf" "$R0\autorun.inf"
+			StrCpy $R1 "$INSTDIR\${APP_NAME}.exe" "" 3
+			WriteINIStr "$R0\autorun.inf" "autorun" "icon" "$R1"
+			WriteINIStr "$R0\autorun.inf" "autorun" "open" "$R1"
+	${EndIf}
+	autorun_done:
 	
 	!insertmacro Lang en-US ${LANG_ENGLISH}
 	
 	${If} $DriveType != ${DRIVE_REMOVABLE}
+		;Create start menu shortcut
+		CreateShortCut "$SMPROGRAMS\${APP_NAME}.lnk" "$INSTDIR\${APP_NAME}.exe" "" "$INSTDIR\${APP_NAME}.exe" 0
+		
 		;Update registry
 		WriteRegStr HKLM "Software\${APP_NAME}" "Install_Dir" "$INSTDIR"
 		WriteRegStr HKLM "Software\${APP_NAME}" "Version" "${APP_VERSION}"
@@ -320,26 +315,9 @@ Section "${APP_NAME}" sec_app
 	${EndIf}
 SectionEnd
 
-Section "$(L10N_SHORTCUT)" sec_shortcut
-	CreateShortCut "$SMPROGRAMS\${APP_NAME}.lnk" "$INSTDIR\${APP_NAME}.exe" "" "$INSTDIR\${APP_NAME}.exe" 0
-SectionEnd
-
-SectionGroup /e "$(L10N_AUTOSTART)"
-	Section /o "$(L10N_AUTOSTART)" sec_autostart
-	SectionEnd
-	Section /o "$(L10N_AUTOSTART_HIDE)" sec_hide
-	SectionEnd
-SectionGroupEnd
-
-Function Launch
-	Exec "$INSTDIR\${APP_NAME}.exe"
-FunctionEnd
-
-;Used when upgrading to skip the components and directory pages
+;Used to skip the directory page
 Function SkipPage
 	${If} $UpgradeState == ${BST_CHECKED}
-	${OrIf} $DriveType == ${DRIVE_REMOVABLE}
-		!insertmacro UnselectSection ${sec_shortcut}
 		Abort
 	${EndIf}
 FunctionEnd
@@ -359,55 +337,15 @@ Function .onInit
 			StrCpy $INSTDIR "$PROGRAMFILES64\${APP_NAME}"
 	${EndIf}
 	!endif
+	
 	;Display language selection and add tray if program is running
 	!insertmacro MUI_LANGDLL_DISPLAY
 	Call AddTray
 	
 	;Handle silent install
-	IfSilent 0 autostart_check
+	IfSilent 0 done
 		!insertmacro UnselectSection ${sec_update}
-	autostart_check:
-	
-	;Determine current autostart setting
-	StrCpy $AutostartSectionState 0
-	ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "${APP_NAME}"
-	IfErrors done
-		!insertmacro SelectSection ${sec_autostart}
-		${StrLoc} $0 $0 "-hide" "<"
-		${If} $0 != ""
-			StrCpy $AutostartSectionState 1
-			!insertmacro SelectSection ${sec_hide}
-		${EndIf}
 	done:
-FunctionEnd
-
-Function .onSelChange
-	;Hide tray automatically checks Autostart
-	${If} ${SectionIsSelected} ${sec_hide}
-		${If} $AutostartSectionState == 0
-			StrCpy $AutostartSectionState 1
-			!insertmacro SelectSection ${sec_autostart}
-		${ElseIfNot} ${SectionIsSelected} ${sec_autostart}
-			StrCpy $AutostartSectionState 0
-			!insertmacro UnselectSection ${sec_hide}
-		${EndIf}
-	${Else}
-		StrCpy $AutostartSectionState 0
-	${EndIf}
-FunctionEnd
-
-Function .onInstSuccess
-	;Set or remove autostart
-	${If} ${SectionIsSelected} ${sec_hide}
-		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "${APP_NAME}" '"$INSTDIR\${APP_NAME}.exe" -hide'
-	${ElseIf} ${SectionIsSelected} ${sec_autostart}
-		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "${APP_NAME}" '"$INSTDIR\${APP_NAME}.exe"'
-	${Else}
-		DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "${APP_NAME}"
-	${EndIf}
-	;Run program if silent
-	IfSilent 0 +2
-		Call Launch
 FunctionEnd
 
 ; Uninstaller
