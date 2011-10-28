@@ -22,9 +22,10 @@ You can use the archive to install to USB sticks as well. Extracting the files t
 
 == Mass deployment ==
 
-The installer is capable of running silently. It is a normal NSIS installer, and as such it supports [http://nsis.sourceforge.net/Docs/Chapter3.html#3.2 common NSIS switches].
-
-Example: `"Removable Drive Reminder-0.1.exe" /S /D=C:\Program Files\Removable Drive Reminder`
+The installer is capable of running silently. It is a normal NSIS installer, and as such it supports [http://nsis.sourceforge.net/Docs/Chapter3.html#3.2 common NSIS switches]. Example:
+{{{
+"Removable Drive Reminder-0.1.exe" /S /D=C:\Program Files\Removable Drive Reminder
+}}}
 
 After installing you can copy over a custom ini file, custom sound, etc., and then finally run the program.
 
