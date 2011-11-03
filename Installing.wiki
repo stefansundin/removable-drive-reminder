@@ -48,7 +48,7 @@ If you install the program to a public computer where you only have some control
 My solution was to create a bat file called `firefox.bat`. You can hide away this file somewhere on your personal drive (in my case `H:\`).
 {{{
 start "" "H:\Removable Drive Reminder\Removable Drive Reminder.exe" -quiet
-start "" "C:\Program Files\Mozilla Firefox\firefox.exe"
+start "" "C:\Program Files\Mozilla Firefox\firefox.exe" %*
 }}}
 
 Then create a shortcut to `firefox.bat` and place it on your desktop. Right-click the shortcut and change the icon to Firefox's icon. Also set the `Run` parameter to `Minimized`. Finally, remove your old shortcut and give this shortcut the name `Firefox`.
