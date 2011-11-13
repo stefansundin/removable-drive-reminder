@@ -213,7 +213,7 @@ int CheckDrives() {
 	GetPrivateProfileString(APP_NAME, L"IgnoreDriveLetters", L"", txt, sizeof(txt)/sizeof(wchar_t), inipath);
 	
 	wchar_t *letter;
-	for (letter=driveletters; letter != '\0'; letter++) {
+	for (letter=driveletters; *letter != '\0'; letter++) {
 		if (drives&bitmask && wcschr(txt,*letter) == NULL) {
 			wchar_t drive[] = L"X:\\";
 			drive[0] = *letter;
