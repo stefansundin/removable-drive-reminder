@@ -32,6 +32,18 @@ After installing you can copy over a custom ini file, custom sound, etc., and th
 Another option is to simply copy the files. The only fancy things the installer really does is to create an uninstaller and a start menu shortcut.
 
 
+== SCCM Script ==
+
+You can use this bat file to install Removable Drive Reminder with SCCM.
+
+{{{
+xcopy "\\NetworkShare\Path\Removable Drive Reminder\*" "C:\Program Files (x86)\Removable Drive Reminder\" /I /Y
+reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /t REG_SZ /v "Removable Drive Reminder" /d "\"C:\Program Files (x86)\Removable Drive Reminder\Removable Drive Reminder.exe\" -hide" /f
+del /F /Q "C:\Program Files (x86)\Removable Drive Reminder\install.bat"
+}}}
+
+Name it `install.bat` and put in the network share. Rename paths as appropriate.
+
 = Running the program =
 
 == USB stick ==
