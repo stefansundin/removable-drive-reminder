@@ -5,7 +5,7 @@ My name is Stefan Sundin. I am a student in Sweden, programming my tools in my f
 
 Donations are a great motivation for me to keep updating my programs. They are also perfect to get my attention, especially if you want me to add some special feature.
 
-You can get in touch with me by sending an email to `stefan[at]stefansundin[.]com`. You can also [http://stefansundin.com/ visit my website] to read a little more about me.
+You can get in touch with me by sending an email to `stefan(at)stefansundin.com`. You can also [http://stefansundin.com/ visit my website] to read a little more about me.
 
 
 = How to donate =
@@ -15,9 +15,9 @@ Currently you can choose to donate with PayPal, Flattr or Bitcoin.
 
 == Donate with PayPal ==
 
-The easiest way to donate is by sending money with PayPal to `stefan[at]stefansundin[.]com`. You can donate with PayPal without a PayPal account, using only your credit card. Note that PayPal will take a small processing fee.
+The easiest way to donate is by sending money with PayPal to `recover89(at)gmail.com`. You can donate with PayPal without a PayPal account, using only your credit card.
 
-[https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=E2VLK4MQ7UD9C http://superf4.googlecode.com/svn/wiki/media/donate.png]
+[https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=8727MAF7NTYRE http://superf4.googlecode.com/svn/wiki/media/donate.png]
 
 
 == Donate with Flattr ==
