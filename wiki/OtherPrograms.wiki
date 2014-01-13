@@ -1,0 +1,14 @@
+#summary Other programs that do the same thing
+#labels Phase-QA
+
+= Open source =
+  * [http://kirrus.co.uk/2011/02/usb-key-reminder-script/ USB Key reminder script] (group policy script)
+
+= Freeware =
+  * [http://www.bgreco.net/reminder.php Flash Drive Reminder]
+  * [http://www.usbalert.nl/ USB Alert]
+
+= Nagware =
+  * [http://freesoftwareproject.weebly.com/free-usb-guard.html Free USB Guard]
+
+Feel free to add more programs in the comments below.
